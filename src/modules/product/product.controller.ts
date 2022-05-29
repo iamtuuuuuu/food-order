@@ -5,6 +5,7 @@ import { GetAllProductDto } from './dto/get-all-product.dto';
 import { ProductCaregoryDto } from './dto/product-category.dto';
 import { ProductStoreDto } from './dto/product-store.dto';
 
+
 @ApiTags('Products')
 @Controller('product')
 export class ProductController {
@@ -39,5 +40,10 @@ export class ProductController {
   @Get('/search-by-store-name')
   searchByStoreName(@Query('q') q: string) {
     return this.productService.searchByNameStore(q.trim());
+  }
+
+  @Get('/:productId')
+  productDetail(@Param('productId') productId: string) {
+    return this.productService.getProductDetails(productId);
   }
 }

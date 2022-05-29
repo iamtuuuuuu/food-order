@@ -13,6 +13,7 @@ import {
   Order,
   OrderItem,
   OrderStatus,
+  Rate,
   Status,
   User,
 } from '../../entities';
@@ -25,6 +26,10 @@ import { getConnection, ILike } from 'typeorm';
 import { ProductService } from '../product/product.service';
 import { DiscountRepository } from '../../repositories/discount.repository';
 import { GetAllUserDto } from './dto/get-all-user.dto';
+import { EntityManager, getConnection } from 'typeorm';
+import { ProductService } from '../product/product.service';
+import { DiscountRepository } from '../../repositories/discount.repository';
+import { RatingOrderDto } from './dto/order.dto';
 
 @Injectable()
 export class UserService {
@@ -229,5 +234,49 @@ export class UserService {
     });
   }
 
-  // async ratingOrder(userId: string, orderId: string);
+  async ratingOrder(
+    userId: string,
+    orderId: string,
+    rating: RatingOrderDto,
+    images?: string[],
+  ) {
+    const result = await getConnection().transaction(
+      async (entityManager: EntityManager) => {
+        const order = await entityManager.findOne(Order, {
+          where: {
+            id: orderId,
+          },
+          relations: ['store'],
+        });
+        if (!order) {
+          throw new NotFoundException('Order not found');
+        }
+        if (orderId !== order.id) {
+          throw new BadRequestException("Can't rate order of other user! ");
+        }
+        if (order.status !== OrderStatus.SUCCESS)
+          throw new BadRequestException('Can not rating pending order');
+        const store = order.store;
+
+        const rate = new Rate();
+        rate.orderId = orderId;
+        rate.star = rating.star;
+        rate.content = rating.content;
+        if (images?.length > 0) rate.images = images;
+        try {
+          await entityManager.save(rate);
+        } catch (e) {
+          throw new BadRequestException('You must be rate order once');
+        }
+
+        // calculate new star of store
+        store.rateCount += 1;
+        store.star =
+          (store.star * (store.rateCount - 1) + rating.star) / store.rateCount;
+        await entityManager.save(store);
+        return rate;
+      },
+    );
+    return result;
+  }
 }
