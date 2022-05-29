@@ -8,16 +8,12 @@ import {
   ProductRepository,
   StoreRepository,
 } from '../../repositories';
-import { Store } from '../../entities';
-import { ILike, In } from 'typeorm';
+import { ILike, In, getConnection } from 'typeorm';
 import { GetAllProductDto } from './dto/get-all-product.dto';
 import { ProductCaregoryDto } from './dto/product-category.dto';
 import { CategoryProductRepository } from 'src/repositories/category-product.repository';
 import { ProductStoreDto } from './dto/product-store.dto';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { ProductRepository, StoreRepository } from '../../repositories';
 import { OrderItem, Product, Rate, Store } from '../../entities';
-import { getConnection, In } from 'typeorm';
 
 @Injectable()
 export class ProductService {
