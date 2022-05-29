@@ -8,7 +8,9 @@ import {
   Patch,
   Post,
   Request,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,6 +25,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ProductService } from '../product/product.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { RatingOrderDto } from './dto/order.dto';
+import uploadImage from '../../share/multer/uploader';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from '../../share/multer/multer-config';
 
 @ApiTags('User')
 @Controller('user')
@@ -104,17 +109,25 @@ export class UserController {
     },
   })
   @UseGuards(JwtGuard)
-  @Post('/order/:orderId')
+  @UseInterceptors(FilesInterceptor('images', 10, multerOptions))
+  @Post('/order/rating/:orderId')
   async ratingOrder(
     @GetUser() user,
     @Param('orderId') orderId: string,
     @Body() ratingOrderDto: RatingOrderDto,
+    @UploadedFiles() images,
   ) {
-    await this.userService.cancelOrder(user.id, orderId);
-    return {
-      success: true,
-      message: 'cancel order successfully',
-    };
+    const linksImage = [];
+    for (const image of images) {
+      const link = await uploadImage(image.path);
+      linksImage.push(link);
+    }
+    return await this.userService.ratingOrder(
+      user.id,
+      orderId,
+      ratingOrderDto,
+      linksImage,
+    );
   }
 
   @ApiBearerAuth('JWT-auth')

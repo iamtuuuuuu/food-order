@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ProductRepository, StoreRepository } from '../../repositories';
-import { Store } from '../../entities';
-import { In } from 'typeorm';
+import { OrderItem, Product, Rate, Store } from '../../entities';
+import { getConnection, In } from 'typeorm';
 
 @Injectable()
 export class ProductService {
@@ -61,5 +61,31 @@ export class ProductService {
       },
     });
     return products;
+  }
+
+  async getProductDetails(productId: string) {
+    return getConnection().transaction(async (entityManager) => {
+      const product = await entityManager.find(Product, {
+        where: {
+          id: productId,
+        },
+      });
+
+      const orders = await entityManager.find(OrderItem, {
+        where: {
+          productId: productId,
+        },
+        relations: ['order'],
+        select: ['order'],
+      });
+
+      const orderIds = orders.map((order) => order.order.id);
+      const rates = await entityManager.find(Rate, {
+        where: {
+          orderId: In(orderIds),
+        },
+      });
+      return { product, rates };
+    });
   }
 }

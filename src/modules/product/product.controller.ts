@@ -1,6 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { ApiTags } from "@nestjs/swagger";
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Products')
 @Controller('product')
@@ -20,5 +20,10 @@ export class ProductController {
   @Get('/search-by-store-name')
   searchByStoreName(@Query('q') q: string) {
     return this.productService.searchByNameStore(q.trim());
+  }
+
+  @Get('/:productId')
+  productDetail(@Param('productId') productId: string) {
+    return this.productService.getProductDetails(productId);
   }
 }
