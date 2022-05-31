@@ -54,8 +54,8 @@ export class UserController {
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
   @UseGuards(JwtGuard)
-  getAllUser(@Query() data: GetAllUserDto) {
-    return this.userService.getAllUser(data);
+  getAllUser(@Query() getAllUserDto: GetAllUserDto) {
+    return this.userService.getAllUser(getAllUserDto);
   }
 
   @ApiBearerAuth('JWT-auth')
@@ -76,6 +76,11 @@ export class UserController {
     const userProfile = await this.userService.findById(user.id);
     const address = userProfile.address;
     return this.productService.nearestProduct(address);
+  }
+
+  @Get('/discount/:storeId')
+  getDisCountOfStore(@Param('storeId') storeId: string) {
+    return this.userService.getDisCountOfStore(storeId);
   }
 
   @ApiBearerAuth('JWT-auth')

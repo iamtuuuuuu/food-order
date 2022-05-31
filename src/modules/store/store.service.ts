@@ -21,7 +21,7 @@ import { getConnection, In } from 'typeorm';
 import { DiscountRepository } from '../../repositories/discount.repository';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
-import { UpdateOrder } from './dto/order.dto';
+import { PaginationDto, UpdateOrder } from './dto/order.dto';
 import { UpdateStoreDto } from './dto/store.dto';
 
 @Injectable()
@@ -185,6 +185,20 @@ export class StoreService {
       where: { id: In(productIds) },
     });
     return products.map((product) => product.storeId);
+  }
+
+  async getOrders(storeId: string, pagination: PaginationDto) {
+    const { page = 1, perPage = 20 } = pagination;
+    return this.orderRepository.find({
+      where: {
+        storeId: storeId,
+      },
+      take: perPage,
+      skip: perPage * (page - 1),
+      order: {
+        id: 'DESC',
+      },
+    });
   }
 
   async updateOrder(

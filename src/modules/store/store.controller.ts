@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -24,7 +25,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
-import { UpdateOrder } from './dto/order.dto';
+import { PaginationDto, UpdateOrder } from './dto/order.dto';
 import { strict } from 'assert';
 import { UpdateStatusDto, UpdateStoreDto } from './dto/store.dto';
 
@@ -181,6 +182,15 @@ export class StoreController {
     @GetUser() user,
   ) {
     return this.storeService.editDiscount(user.id, id, updateDiscountDto);
+  }
+
+  @Get('/order')
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(RolesGuard)
+  @Roles(Role.Store)
+  @UseGuards(JwtGuard)
+  getAllOrder(@Query() pagination: PaginationDto, @GetUser() store) {
+    return this.storeService.getOrders(store.id, pagination);
   }
 
   @Patch('/order/update/:id')

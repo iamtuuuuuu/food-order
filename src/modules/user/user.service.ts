@@ -23,7 +23,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { StoreService } from '../store/store.service';
 import { GetAllUserDto } from './dto/get-all-user.dto';
-import { EntityManager, getConnection, ILike } from 'typeorm';
+import { EntityManager, getConnection, ILike, MoreThan } from 'typeorm';
 import { ProductService } from '../product/product.service';
 import { DiscountRepository } from '../../repositories/discount.repository';
 import { RatingOrderDto } from './dto/order.dto';
@@ -136,6 +136,16 @@ export class UserService {
       },
       { ...data },
     );
+  }
+
+  async getDisCountOfStore(storeId: string) {
+    return this.discountRepository.find({
+      where: {
+        storeId,
+        status: Status.ACTIVE,
+        end: MoreThan(new Date()),
+      },
+    });
   }
 
   async order(userId: string, createOrderDto: CreateOrderDto) {
