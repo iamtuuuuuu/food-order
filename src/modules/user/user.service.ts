@@ -60,6 +60,10 @@ export class UserService {
     return this.userRepository.findOne({ id });
   }
 
+  deleteUser(id) {
+    return this.userRepository.delete({ id });
+  }
+
   async create(user: CreateUserDto) {
     const newUser = new User();
     newUser.name = user.name;
