@@ -9,6 +9,7 @@ import {
 import { Order } from './order.entity';
 import { Notification } from './notifycation.entity';
 import { Role } from './role.enum';
+import { Exclude } from 'class-transformer';
 
 type UserRole = Exclude<Role, Role.Store>;
 
@@ -33,6 +34,7 @@ export class User {
   phoneNumber: string;
 
   @Column({ nullable: false })
+  @Exclude()
   password: string;
 
   @Column({ nullable: true })

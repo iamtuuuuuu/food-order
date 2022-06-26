@@ -23,10 +23,10 @@ export class ProductController {
     return this.productService.getProductByCategory(categoryId, data);
   }
 
-  @Get('/all-product/:storeId')
+  @Get('/all-product/store/:storeId')
   getProductByStore(
     @Param('storeId') storeId: string,
-    @Query() data: ProductStoreDto,
+    @Query() data?: ProductStoreDto,
   ) {
     return this.productService.getProductByStore(storeId, data);
   }
@@ -56,6 +56,4 @@ export class ProductController {
   productDetail(@Param('productId') productId: string) {
     return this.productService.getProductDetails(productId);
   }
-
-
 }

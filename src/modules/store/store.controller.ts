@@ -272,7 +272,6 @@ export class StoreController {
   @UseInterceptors(FilesInterceptor('images', 10, multerOptions))
   async updateStore(
     @UploadedFiles() images,
-    @Param('productId') productId: string,
     @Body() updateStoreDto: UpdateStoreDto,
     @GetUser() store,
   ) {

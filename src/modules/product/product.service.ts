@@ -71,13 +71,15 @@ export class ProductService {
   }
 
   async getProductByStore(storeId: string, data: ProductStoreDto) {
+    console.log(
+      '🚀 ~ file: product.service.ts ~ line 74 ~ ProductService ~ getProductByStore ~ storeId',
+      storeId,
+    );
     const store = await this.storeRepository.findOne({
       where: { id: storeId },
     });
     if (!store) {
-      throw new NotFoundException(
-        `Oh no. Don't have store here. Please check again!`,
-      );
+      throw new NotFoundException(`Store not found!`);
     }
 
     const page = data.page || 1;
@@ -85,7 +87,7 @@ export class ProductService {
     const skip = (page - 1) * perPage;
 
     const result = await this.storeRepository.find({
-      where: { storeId: storeId },
+      where: { id: storeId },
       relations: ['products'],
       order: { createdAt: 'ASC' },
       take: perPage,

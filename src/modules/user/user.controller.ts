@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   Request,
+  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -31,7 +32,7 @@ import { Roles } from 'src/share/decorators/roles.decorator';
 import { Role } from 'src/entities';
 import { GetAllUserDto } from './dto/get-all-user.dto';
 import uploadImage from '../../share/multer/uploader';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../share/multer/multer-config';
 
 @ApiTags('User')
@@ -59,9 +60,34 @@ export class UserController {
   }
 
   @ApiBearerAuth('JWT-auth')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+          nullable: true,
+        },
+        name: { type: 'string', nullable: true },
+        address: { type: 'string', nullable: true },
+      },
+    },
+  })
   @UseGuards(JwtGuard)
   @Patch('/update')
-  async update(@GetUser() user, @Body() data: UpdateUserDto) {
+  @UseInterceptors(FileInterceptor('image', multerOptions))
+  async update(
+    @GetUser() user,
+    @Body() data: UpdateUserDto,
+    @UploadedFile() image,
+  ) {
+    console.log(image);
+
+    const linkImage = image ? await uploadImage(image) : '';
+    data = linkImage ? { ...data, avatar: linkImage } : data;
     await this.userService.edit(user.id, data);
     return {
       success: true,
@@ -158,7 +184,7 @@ export class UserController {
   }
 
   @Delete('/delete/:userId')
-  @ApiBearerAuth('Jwt-auth')
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
   @UseGuards(JwtGuard)
@@ -167,7 +193,7 @@ export class UserController {
   }
 
   @Get('/store-details')
-  @ApiBearerAuth('Jwt-auth')
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
   @UseGuards(JwtGuard)
@@ -176,7 +202,7 @@ export class UserController {
   }
 
   @Patch('/store-details/:id')
-  @ApiBearerAuth('Jwt-auth')
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
   @UseGuards(JwtGuard)
@@ -188,9 +214,18 @@ export class UserController {
   }
 
   @Get('/notifications')
-  @ApiBearerAuth('Jwt-auth')
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtGuard)
   getNotification(@GetUser() user) {
     return this.userService.getNotifications(user.id);
+  }
+
+  @Get('/admin')
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin)
+  @UseGuards(JwtGuard)
+  async getAdmin() {
+    return this.userService.getAdmin();
   }
 }

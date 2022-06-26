@@ -1,9 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class ProductCaregoryDto {
-  @ApiProperty({ nullable: true })
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
   page: number;
 
-  @ApiProperty({ nullable: true })
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
   perPage: number;
 }

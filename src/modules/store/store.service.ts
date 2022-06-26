@@ -46,7 +46,7 @@ export class StoreService {
 
   async getStores() {
     return this.storeRepository.find({
-      where: { isVerify: true },
+      where: {},
       select: [
         'id',
         'name',
@@ -58,6 +58,7 @@ export class StoreService {
         'star',
         'timeOpen',
         'timeClose',
+        'isVerify',
       ],
     });
   }
@@ -113,7 +114,8 @@ export class StoreService {
   }
 
   getOwnerProduct(id: string) {
-    return this.productRepository.find({ where: { store: id } });
+    console.log(id);
+    return this.productRepository.find({ where: { storeId: id } });
   }
 
   async addProduct(

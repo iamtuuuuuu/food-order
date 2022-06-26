@@ -75,15 +75,16 @@ export class CategoryController {
         image: {
           type: 'string',
           format: 'binary',
-          nullable: true,
+          nullable: false,
         },
-        name: { type: 'string', nullable: true },
+        name: { type: 'string', nullable: false },
       },
     },
   })
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
   @UseGuards(JwtGuard)
+  @UseInterceptors(FileInterceptor('image', multerOptions))
   async edit(
     @Param('id') id: string,
     @Body() createCategoryDto: CreateCategoryDto,

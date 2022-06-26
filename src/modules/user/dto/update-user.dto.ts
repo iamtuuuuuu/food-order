@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto {
   @ApiPropertyOptional()
@@ -7,8 +7,16 @@ export class UpdateUserDto {
   @IsOptional()
   name?: string;
 
-  @ApiPropertyOptional({example: 'Nghĩa Đô, Cầu Giấy, Hà Nội' ,description: 'format: (xã phường, quận huyện, tỉnh thành phố)'})
+  @ApiPropertyOptional({
+    example: 'Nghĩa Đô, Cầu Giấy, Hà Nội',
+    description: 'format: (xã phường, quận huyện, tỉnh thành phố)',
+  })
   @IsString()
   @IsOptional()
   address?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  avatar?: string;
 }

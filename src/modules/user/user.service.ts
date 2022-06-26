@@ -20,6 +20,7 @@ import {
   OrderItem,
   OrderStatus,
   Rate,
+  Role,
   Status,
   User,
 } from '../../entities';
@@ -328,6 +329,14 @@ export class UserService {
       },
       order: {
         createdAt: 'DESC',
+      },
+    });
+  }
+
+  async getAdmin() {
+    return this.userRepository.find({
+      where: {
+        role: Role.Admin,
       },
     });
   }
