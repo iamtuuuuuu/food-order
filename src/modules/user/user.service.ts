@@ -214,7 +214,7 @@ export class UserService {
           totalPrice = totalPrice - discount.discountPrice;
           totalPrice = totalPrice >= 0 ? totalPrice : 0;
         }
-        totalPrice = totalPrice - totalPrice * discount.discountPercent;
+        totalPrice = totalPrice - totalPrice * (discount.discountPercent / 100);
       }
       newOrder.totalPrice = totalPrice;
       await entityManager.save(newOrder);
