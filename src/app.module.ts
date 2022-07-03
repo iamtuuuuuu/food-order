@@ -3,6 +3,11 @@ import { LoggingModule } from './share/logging/logging.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmOptions } from './configs/database.config';
 import { HttpModule } from '@nestjs/axios';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { CategoryModule } from './modules/category/category.module';
+import { ProductModule } from './modules/product/product.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -10,6 +15,11 @@ import { HttpModule } from '@nestjs/axios';
     Logger,
     HttpModule,
     TypeOrmModule.forRootAsync(typeOrmOptions),
+    AuthModule,
+    UserModule,
+    CategoryModule,
+    ProductModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [Logger],

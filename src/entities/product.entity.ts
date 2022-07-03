@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -36,10 +37,14 @@ export class Product {
   @Column({ type: 'enum', enum: ['active', 'inactive'], default: 'active' })
   status: Status;
 
-  @Column({ name: 'bought_num', type: 'int' })
+  @Column({ name: 'bought_num', type: 'int', default: 0 })
   boughtNum: number;
 
+  @Column('uuid', { nullable: false })
+  storeId: string;
+
   @ManyToOne(() => Store, (store) => store.products)
+  @JoinColumn({ name: 'storeId' })
   store: Store;
 
   @OneToMany(

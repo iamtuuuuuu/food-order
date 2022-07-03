@@ -1,4 +1,5 @@
 import {
+  ApiBody,
   ApiOperation,
   ApiOperationOptions,
   ApiProperty,
@@ -29,6 +30,27 @@ export function enumProperty(options: ApiPropertyOptions): ApiPropertyOptions {
   };
 }
 
+export const ApiMultiFile =
+  (fileName: string = 'files'): MethodDecorator =>
+  (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    ApiBody({
+      type: 'multipart/form-data',
+      required: true,
+      schema: {
+        type: 'object',
+        properties: {
+          [fileName]: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+        },
+      },
+    })(target, propertyKey, descriptor);
+  };
+
 const createApiOperation = (defaultOptions: ApiOperationOptions) => {
   return (options?: ApiOperationOptions): MethodDecorator =>
     ApiOperation({
@@ -39,6 +61,7 @@ const createApiOperation = (defaultOptions: ApiOperationOptions) => {
 
 export const ApiEnumProperty = (options: ApiPropertyOptions) =>
   ApiProperty(enumProperty(options));
+
 export const ApiListOperation = createApiOperation({
   summary: 'List all',
 });
